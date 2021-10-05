@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 
+import io.github.thebusybiscuit.slimefun4.implementation.items.electric.machines.AutomatedCraftingChamber;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -78,6 +79,7 @@ public final class PostSetup {
             }
         }
 
+        loadAutomaticCraftingChamber();
         loadOreGrinderRecipes();
         loadSmelteryRecipes();
 
@@ -125,6 +127,14 @@ public final class PostSetup {
                         .filter(item -> item.getAddon() instanceof Slimefun)
                         .count();
         // @formatter:on
+    }
+
+    private static void loadAutomaticCraftingChamber() {
+        AutomatedCraftingChamber crafter = (AutomatedCraftingChamber) SlimefunItems.AUTOMATED_CRAFTING_CHAMBER.getItem();
+
+        if (crafter != null) {
+            crafter.loadRecipes();
+        }
     }
 
     private static void loadOreGrinderRecipes() {

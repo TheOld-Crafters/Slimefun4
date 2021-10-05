@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import io.github.thebusybiscuit.slimefun4.implementation.items.electric.machines.*;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -87,26 +88,6 @@ import io.github.thebusybiscuit.slimefun4.implementation.items.electric.generato
 import io.github.thebusybiscuit.slimefun4.implementation.items.electric.generators.LavaGenerator;
 import io.github.thebusybiscuit.slimefun4.implementation.items.electric.generators.MagnesiumGenerator;
 import io.github.thebusybiscuit.slimefun4.implementation.items.electric.generators.SolarGenerator;
-import io.github.thebusybiscuit.slimefun4.implementation.items.electric.machines.AutoAnvil;
-import io.github.thebusybiscuit.slimefun4.implementation.items.electric.machines.AutoBrewer;
-import io.github.thebusybiscuit.slimefun4.implementation.items.electric.machines.AutoDrier;
-import io.github.thebusybiscuit.slimefun4.implementation.items.electric.machines.CarbonPress;
-import io.github.thebusybiscuit.slimefun4.implementation.items.electric.machines.ChargingBench;
-import io.github.thebusybiscuit.slimefun4.implementation.items.electric.machines.ElectricDustWasher;
-import io.github.thebusybiscuit.slimefun4.implementation.items.electric.machines.ElectricFurnace;
-import io.github.thebusybiscuit.slimefun4.implementation.items.electric.machines.ElectricGoldPan;
-import io.github.thebusybiscuit.slimefun4.implementation.items.electric.machines.ElectricIngotFactory;
-import io.github.thebusybiscuit.slimefun4.implementation.items.electric.machines.ElectricIngotPulverizer;
-import io.github.thebusybiscuit.slimefun4.implementation.items.electric.machines.ElectricOreGrinder;
-import io.github.thebusybiscuit.slimefun4.implementation.items.electric.machines.ElectricPress;
-import io.github.thebusybiscuit.slimefun4.implementation.items.electric.machines.ElectricSmeltery;
-import io.github.thebusybiscuit.slimefun4.implementation.items.electric.machines.ElectrifiedCrucible;
-import io.github.thebusybiscuit.slimefun4.implementation.items.electric.machines.FluidPump;
-import io.github.thebusybiscuit.slimefun4.implementation.items.electric.machines.FoodComposter;
-import io.github.thebusybiscuit.slimefun4.implementation.items.electric.machines.FoodFabricator;
-import io.github.thebusybiscuit.slimefun4.implementation.items.electric.machines.Freezer;
-import io.github.thebusybiscuit.slimefun4.implementation.items.electric.machines.HeatedPressureChamber;
-import io.github.thebusybiscuit.slimefun4.implementation.items.electric.machines.Refinery;
 import io.github.thebusybiscuit.slimefun4.implementation.items.electric.machines.accelerators.AnimalGrowthAccelerator;
 import io.github.thebusybiscuit.slimefun4.implementation.items.electric.machines.accelerators.CropGrowthAccelerator;
 import io.github.thebusybiscuit.slimefun4.implementation.items.electric.machines.accelerators.TreeGrowthAccelerator;
@@ -2503,6 +2484,21 @@ public final class SlimefunItemSetup {
         new AdvancedCargoOutputNode(categories.cargo, SlimefunItems.CARGO_OUTPUT_NODE_2, RecipeType.ENHANCED_CRAFTING_TABLE,
         new ItemStack[] {null, SlimefunItems.CARGO_MOTOR, null, SlimefunItems.COBALT_INGOT, SlimefunItems.CARGO_OUTPUT_NODE, SlimefunItems.COBALT_INGOT, null, SlimefunItems.CARGO_MOTOR, null})
         .register(plugin);
+
+        new AutomatedCraftingChamber(categories.electricity, SlimefunItems.AUTOMATED_CRAFTING_CHAMBER, RecipeType.ENHANCED_CRAFTING_TABLE,
+                new ItemStack[] {null, new ItemStack(Material.CRAFTING_TABLE), null, SlimefunItems.CARGO_MOTOR, SlimefunItems.BLISTERING_INGOT_3, SlimefunItems.CARGO_MOTOR, null, SlimefunItems.ELECTRIC_MOTOR, null}) {
+
+            @Override
+            public int getEnergyConsumption() {
+                return 10;
+            }
+
+            @Override
+            public int getCapacity() {
+                return 256;
+            }
+
+        }.register(plugin);
 
         new ReactorAccessPort(categories.cargo, SlimefunItems.REACTOR_ACCESS_PORT, RecipeType.ENHANCED_CRAFTING_TABLE,
         new ItemStack[] {null, SlimefunItems.BLISTERING_INGOT_3, null, SlimefunItems.LEAD_INGOT, SlimefunItems.CARGO_MOTOR, SlimefunItems.LEAD_INGOT, null, SlimefunItems.ELECTRIC_MOTOR, null})
