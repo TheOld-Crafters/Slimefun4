@@ -278,16 +278,34 @@ public final class SlimefunUtils {
         } else if (checkAmount && item.getAmount() < sfitem.getAmount()) {
             return false;
         } else if (sfitem instanceof SlimefunItemStack && item instanceof SlimefunItemStack) {
-            return ((SlimefunItemStack) item).getItemId().equals(((SlimefunItemStack) sfitem).getItemId());
+            SlimefunItemStack stackOne = (SlimefunItemStack) sfitem;
+            SlimefunItemStack stackTwo = (SlimefunItemStack) item;
+            if (stackOne.getItemId().equals(stackTwo.getItemId())) {
+                /*
+                 * PR #3417
+                 *
+                 * Some items can't rely on just IDs matching and will implement Distinctive Item
+                 * in which case we want to use the method provided to compare
+                 */
+                return canStack(stackOne.getItemMeta(), stackTwo.getItemMeta());
+            }
+            return false;
         } else if (item.hasItemMeta()) {
             Debug.log(TestCase.CARGO_INPUT_TESTING, "SlimefunUtils#isItemSimilar - item.hasItemMeta()");
             ItemMeta itemMeta = item.getItemMeta();
 
             if (sfitem instanceof SlimefunItemStack) {
-                Optional<String> id = Slimefun.getItemDataService().getItemData(itemMeta);
+                String id = Slimefun.getItemDataService().getItemData(itemMeta).orElse(null);
 
-                if (id.isPresent()) {
-                    return id.get().equals(((SlimefunItemStack) sfitem).getItemId());
+                if (id != null) {
+                    /*
+                     * PR #3417
+                     *
+                     * Some items can't rely on just IDs matching and will implement Distinctive Item
+                     * in which case we want to use the method provided to compare
+                     */
+                    ItemMeta sfItemMeta = sfitem.getItemMeta();
+                    return id.equals(((SlimefunItemStack) sfitem).getItemId()) && canStack(sfItemMeta, itemMeta);
                 }
 
                 ItemMetaSnapshot meta = ((SlimefunItemStack) sfitem).getItemMetaSnapshot();
@@ -300,13 +318,22 @@ public final class SlimefunUtils {
                  * Slimefun items may be ItemStackWrapper's in the context of cargo
                  * so let's try to do an ID comparison before meta comparison
                  */
-                ItemMeta possibleSfItemMeta = sfitem.getItemMeta();
                 Debug.log(TestCase.CARGO_INPUT_TESTING, "  sfitem is ItemStackWrapper - possible SF Item: {}", sfitem);
 
+                ItemMeta possibleSfItemMeta = sfitem.getItemMeta();
+                String id = Slimefun.getItemDataService().getItemData(itemMeta).orElse(null);
+                String possibleItemId = Slimefun.getItemDataService().getItemData(possibleSfItemMeta).orElse(null);
                 // Prioritize SlimefunItem id comparison over ItemMeta comparison
-                if (Slimefun.getItemDataService().hasEqualItemData(possibleSfItemMeta, itemMeta)) {
+                if (id != null && id.equals(possibleItemId)) {
                     Debug.log(TestCase.CARGO_INPUT_TESTING, "  Item IDs matched!");
-                    return true;
+
+                    /*
+                     * PR #3417
+                     *
+                     * Some items can't rely on just IDs matching and will implement Distinctive Item
+                     * in which case we want to use the method provided to compare
+                     */
+                    return canStack(possibleSfItemMeta, itemMeta);
                 } else {
                     Debug.log(TestCase.CARGO_INPUT_TESTING, "  Item IDs don't match, checking meta {} == {} (lore: {})", itemMeta, possibleSfItemMeta, checkLore);
                     return equalsItemMeta(itemMeta, possibleSfItemMeta, checkLore);
@@ -541,5 +568,15 @@ public final class SlimefunUtils {
             }
             return true;
         }
+    }
+
+    public static boolean canStack(@Nonnull ItemMeta itemMetaOne, @Nonnull ItemMeta itemMetaTwo) {
+        boolean hasLoreItem = itemMetaTwo.hasLore();
+        boolean hasLoreSfItem = itemMetaOne.hasLore();
+
+        if (hasLoreItem && hasLoreSfItem && SlimefunUtils.equalsLore(itemMetaTwo.getLore(), itemMetaOne.getLore())) {
+            return true;
+        }
+        return !hasLoreItem && !hasLoreSfItem;
     }
 }
