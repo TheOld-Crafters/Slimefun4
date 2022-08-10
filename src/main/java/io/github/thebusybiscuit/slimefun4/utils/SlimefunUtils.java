@@ -269,6 +269,10 @@ public final class SlimefunUtils {
     }
 
     public static boolean isItemSimilar(@Nullable ItemStack item, @Nullable ItemStack sfitem, boolean checkLore, boolean checkAmount) {
+        return isItemSimilar(item, sfitem, checkLore, checkAmount, true);
+    }
+
+    public static boolean isItemSimilar(@Nullable ItemStack item, @Nullable ItemStack sfitem, boolean checkLore, boolean checkAmount, boolean checkStackable) {
         if (item == null) {
             return sfitem == null;
         } else if (sfitem == null) {
@@ -287,7 +291,7 @@ public final class SlimefunUtils {
                  * Some items can't rely on just IDs matching and will implement Distinctive Item
                  * in which case we want to use the method provided to compare
                  */
-                return canStack(stackOne.getItemMeta(), stackTwo.getItemMeta());
+                return !checkStackable || canStack(stackOne.getItemMeta(), stackTwo.getItemMeta());
             }
             return false;
         } else if (item.hasItemMeta()) {
@@ -305,6 +309,9 @@ public final class SlimefunUtils {
                      * in which case we want to use the method provided to compare
                      */
                     ItemMeta sfItemMeta = sfitem.getItemMeta();
+                    if (!checkStackable) {
+                        return id.equals(((SlimefunItemStack) sfitem).getItemId());
+                    }
                     return id.equals(((SlimefunItemStack) sfitem).getItemId()) && canStack(sfItemMeta, itemMeta);
                 }
 
@@ -333,7 +340,7 @@ public final class SlimefunUtils {
                      * Some items can't rely on just IDs matching and will implement Distinctive Item
                      * in which case we want to use the method provided to compare
                      */
-                    return canStack(possibleSfItemMeta, itemMeta);
+                    return !checkStackable || canStack(possibleSfItemMeta, itemMeta);
                 } else {
                     Debug.log(TestCase.CARGO_INPUT_TESTING, "  Item IDs don't match, checking meta {} == {} (lore: {})", itemMeta, possibleSfItemMeta, checkLore);
                     return equalsItemMeta(itemMeta, possibleSfItemMeta, checkLore);
